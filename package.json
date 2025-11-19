@@ -1,0 +1,43 @@
+{
+  "name": "token42",
+  "version": "1.0.0",
+  "description": "A complete SPL token implementation on Solana blockchain - 42 School Tokenizer project",
+  "main": "code/create_token.js",
+  "scripts": {
+    "create": "node code/create_token.js",
+    "mint": "node code/mint_tokens.js",
+    "balance": "node code/get_balance.js",
+    "transfer": "node code/transfer_tokens.js",
+    "info": "node deployment/testnet_mint_addr.js",
+    "airdrop": "node deployment/scripts/airdrop.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eltitoyisus/tokenizer.git"
+  },
+  "keywords": [
+    "solana",
+    "spl-token",
+    "blockchain",
+    "web3",
+    "cryptocurrency",
+    "token",
+    "42",
+    "tokenizer",
+    "defi"
+  ],
+  "author": "Jesus (eltitoyisus)",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/eltitoyisus/tokenizer/issues"
+  },
+  "homepage": "https://github.com/eltitoyisus/tokenizer#readme",
+  "dependencies": {
+    "@solana/spl-token": "^0.1.8",
+    "@solana/web3.js": "^1.98.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
