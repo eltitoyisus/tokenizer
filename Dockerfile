@@ -1,13 +1,11 @@
 
-FROM debian:bookworm
-
-RUN apt-get update && apt-get install -y \
-    npm
+FROM node:20-bullseye-slim
 
 WORKDIR /app
 
-COPY package.json .
+COPY package*.json ./
+RUN npm install --production
 
-RUN npm install
+COPY . .
 
-CMD ["node", "index.js"]
+CMD ["node", "code/create_token.js"]
