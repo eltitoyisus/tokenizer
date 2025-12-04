@@ -1,8 +1,8 @@
 const { 
-	createMint,
-	getMint
+	Token,
+	TOKEN_PROGRAM_ID
 } = require('@solana/spl-token');
-const { LAMPORTS_PER_SOL } = require('@solana/web3.js');
+const { LAMPORTS_PER_SOL, Keypair } = require('@solana/web3.js');
 const { getConnection } = require('./utils/connection');
 const { getOrCreateWallet, saveWallet } = require('./utils/wallet');
 const { TOKEN_CONFIG } = require('./utils/config');
@@ -23,6 +23,8 @@ async function createToken() {
 		console.log(`Current balance: ${balanceInSOL} SOL`);
 		
 		if (balance === 0) {
+			console.log('\n⚠️ Insufficient balance!');
+			console.log('Please fund your wallet with devnet SOL from:');
 			console.log('https://faucet.solana.com/');
 			console.log(`Wallet address: ${payer.publicKey.toString()}`);
 			return;
@@ -33,27 +35,30 @@ async function createToken() {
 		console.log(`Token symbol: ${TOKEN_CONFIG.symbol}`);
 		console.log(`Decimals: ${TOKEN_CONFIG.decimals}`);
 		
-		const mint = await createMint(
+		// Create a new token mint
+		const mintKeypair = Keypair.generate();
+		const token = await Token.createMint(
 			connection,
 			payer,                          // Payer for the transaction
 			payer.publicKey,                // Mint authority (can mint new tokens)
 			payer.publicKey,                // Freeze authority (can freeze token accounts)
-			TOKEN_CONFIG.decimals           // Number of decimals
+			TOKEN_CONFIG.decimals,          // Number of decimals
+			TOKEN_PROGRAM_ID
 		);
 		
 		console.log('\n✅ Token created successfully!');
-		console.log(`Token Mint Address: ${mint.toString()}`);
+		console.log(`Token Mint Address: ${token.publicKey.toString()}`);
 		
 		console.log('\nVerifying token mint...');
-		const mintInfo = await getMint(connection, mint);
+		const mintInfo = await token.getMintInfo();
 		console.log(`Mint Authority: ${mintInfo.mintAuthority.toString()}`);
-		console.log(`Freeze Authority: ${mintInfo.freezeAuthority.toString()}`);
+		console.log(`Freeze Authority: ${mintInfo.freezeAuthority ? mintInfo.freezeAuthority.toString() : 'None'}`);
 		console.log(`Decimals: ${mintInfo.decimals}`);
 		console.log(`Current Supply: ${mintInfo.supply.toString()}`);
 		
 		const mintAddressFile = path.join(__dirname, '../deployment/token_mint_address.json');
 		const mintData = {
-			mintAddress: mint.toString(),
+			mintAddress: token.publicKey.toString(),
 			network: require('./utils/config').NETWORK,
 			tokenName: TOKEN_CONFIG.name,
 			tokenSymbol: TOKEN_CONFIG.symbol,
