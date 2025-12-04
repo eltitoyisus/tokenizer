@@ -332,22 +332,22 @@ tokenizer/
    docker build -t token42 .
    ```
 
-3. **Run commands using Docker**
+3. **Run interactively (enter the container)**
    ```bash
-   # Create token
-   docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
+   docker run -it -v ${PWD}/deployment:/app/deployment token42
+   ```
    
-   # Mint tokens
-   docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js <ADDRESS> <AMOUNT>
-   
-   # Check balance
-   docker run token42 node code/get_balance.js <ADDRESS>
-   
-   # Transfer tokens
-   docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js payer-wallet.json <RECIPIENT> <AMOUNT>
+   Now you're inside the container and can run all commands:
+   ```bash
+   node code/get_balance.js
+   node code/create_token.js
+   node code/mint_tokens.js JD346pPJM3WGCxu8i8H1XKMXWqW43UBcHNUSXRs8r16x 1000
    ```
 
-**Note**: The `-v ${PWD}/deployment:/app/deployment` flag mounts your local `deployment` folder to persist wallet files and transaction logs.
+4. **Exit the container**
+   ```bash
+   exit
+   ```
 
 ---
 
@@ -357,22 +357,44 @@ tokenizer/
 
 ### Using Docker (if npm is not available)
 
-**Step 1: Build the image**
+**Step 1: Build and run Docker container**
 ```bash
 docker build -t token42 .
+docker run -it -v ${PWD}/deployment:/app/deployment token42
 ```
 
-**Step 2: Fund the fixed test wallet (one-time setup)**
+**Step 2: Inside the container - Fund the fixed test wallet (one-time setup)**
 ```bash
-# The project uses this fixed devnet wallet: BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
-docker run -v ${PWD}/deployment:/app/deployment token42 node deployment/scripts/airdrop.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV 2
+# Visit https://faucet.solana.com/ and fund:
+# JD346pPJM3WGCxu8i8H1XKMXWqW43UBcHNUSXRs8r16x (2 SOL)
 
-# Or visit: https://faucet.solana.com/
+# Verify funding
+node code/get_balance.js
 ```
 
 **Step 3: Create your token**
 ```bash
-docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
+node code/create_token.js
+```
+
+**Step 4: Mint tokens**
+```bash
+node code/mint_tokens.js JD346pPJM3WGCxu8i8H1XKMXWqW43UBcHNUSXRs8r16x 1000
+```
+
+**Step 5: Check balances**
+```bash
+node code/get_balance.js
+```
+
+**Step 6: Transfer tokens**
+```bash
+node code/transfer_tokens.js payer-wallet.json 45dJW7NG4TSSnG58Xp3XwskxWgryPBDpZTpLBbQPqU1B 100
+```
+
+**Step 7: Exit**
+```bash
+exit
 ```
 
 **Step 4: Mint tokens**
@@ -498,12 +520,13 @@ node code/transfer_tokens.js payer-wallet.json 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrr
 
 ```bash
 node deployment/testnet_mint_addr.js
-```
+## 📚 Documentation
 
----
-
-## 🔒 Security
-
+- **[Usage Guide](documentation/usage.md)** - Comprehensive usage documentation
+- **[Deployment Guide](deployment/deploy_steps.md)** - Step-by-step deployment instructions
+- **[Test Wallets](deployment/TEST_WALLETS.md)** - Fixed wallets for devnet/testnet testing
+- **[Changes Log](deployment/CHANGELOG.md)** - Recent improvements and changes
+- **Transaction Logs** - `deployment/transaction_logs/`
 ### Wallet Security
 
 - **Never commit wallet files to Git** - Included in .gitignore
