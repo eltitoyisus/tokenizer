@@ -228,34 +228,46 @@ Stored in `deployment/transaction_logs/mint_log.json`
 
 **Command (Local):**
 ```bash
+# Ver TODAS las wallets de prueba (sin argumentos)
+node code/get_balance.js
+
+# Ver wallet específica
 node code/get_balance.js <WALLET_ADDRESS> [--all]
 ```
 
 **Command (Docker):**
 ```bash
+# Ver TODAS las wallets de prueba
+docker run token42 node code/get_balance.js
+
+# Ver wallet específica
 docker run token42 node code/get_balance.js <WALLET_ADDRESS> [--all]
 ```
 
 **Parameters:**
-- `WALLET_ADDRESS`: Solana wallet public key
-- `--all`: (Optional) Show all token accounts
+- Sin parámetros: Muestra balance de todas las wallets de prueba
+- `WALLET_ADDRESS`: Solana wallet public key (opcional)
+- `--all`: Show all token accounts for a specific wallet
 
 **Examples (Local):**
 ```bash
-# Check Token42 balance
-node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+# Ver balance de TODAS las wallets de prueba (NUEVO!)
+node code/get_balance.js
 
-# Check all tokens
-node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU --all
+# Ver balance de una wallet específica
+node code/get_balance.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
+
+# Ver todas las cuentas de tokens de una wallet
+node code/get_balance.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV --all
 ```
 
 **Examples (Docker):**
 ```bash
-# Check Token42 balance
-docker run token42 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+# Ver balance de TODAS las wallets de prueba
+docker run token42 node code/get_balance.js
 
-# Check all tokens
-docker run token42 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU --all
+# Ver balance de una wallet específica
+docker run token42 node code/get_balance.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
 ```
 
 **Output:**

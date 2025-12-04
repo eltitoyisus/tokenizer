@@ -5,7 +5,7 @@ const {
 } = require('@solana/spl-token');
 const { PublicKey, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 const { getConnection } = require('./utils/connection');
-const { TOKEN_CONFIG } = require('./utils/config');
+const { TOKEN_CONFIG, TEST_WALLETS } = require('./utils/config');
 const fs = require('fs');
 const path = require('path');
 
@@ -119,25 +119,101 @@ async function getAllTokenAccounts(walletAddress) {
     }
 }
 
-if (require.main === module) {
-    const args = process.argv.slice(2);
-    
-    if (args.length < 1) {
-        console.log('Usage: node get_balance.js <wallet_address> [--all]');
-        console.log('Examples:');
-        console.log('  node get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU');
-        console.log('  node get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU --all');
-        process.exit(1);
-    }
-    
-    const walletAddress = args[0];
-    const showAll = args.includes('--all');
-    
-    if (showAll) {
-        getAllTokenAccounts(walletAddress);
-    } else {
-        getBalance(walletAddress);
+async function showAllTestWallets() {
+    try {
+        console.log('╔═══════════════════════════════════════════════╗');
+        console.log('║      Balances de Wallets de Prueba           ║');
+        console.log('╚═══════════════════════════════════════════════╝\n');
+        
+        const connection = getConnection();
+        
+        // Load mint address if exists
+        const mintAddressFile = path.join(__dirname, '../deployment/token_mint_address.json');
+        let mintAddress = null;
+        let tokenExists = false;
+        
+        if (fs.existsSync(mintAddressFile)) {
+            const mintData = JSON.parse(fs.readFileSync(mintAddressFile, 'utf-8'));
+            mintAddress = new PublicKey(mintData.mintAddress);
+            tokenExists = true;
+        }
+        
+        const walletNames = {
+            'payer': '🔑 Payer (Principal)',
+            'recipient': '📥 Recipient (Secundaria)'
+        };
+        
+        for (const [key, name] of Object.entries(walletNames)) {
+            const wallet = TEST_WALLETS[key];
+            const publicKey = new PublicKey(wallet.publicKey);
+            
+            console.log('─'.repeat(50));
+            console.log(name);
+            console.log('─'.repeat(50));
+            console.log(`Dirección: ${wallet.publicKey}\n`);
+            
+            // Get SOL balance
+            const solBalance = await connection.getBalance(publicKey);
+            const solBalanceInSOL = solBalance / LAMPORTS_PER_SOL;
+            console.log(`💰 SOL Balance: ${solBalanceInSOL.toFixed(9)} SOL`);
+            
+            // Get Token balance if token exists
+            if (tokenExists) {
+                try {
+                    const associatedTokenAddress = await getAssociatedTokenAddress(
+                        mintAddress,
+                        publicKey
+                    );
+                    
+                    const tokenAccount = await getAccount(connection, associatedTokenAddress);
+                    const balance = Number(tokenAccount.amount) / (10 ** TOKEN_CONFIG.decimals);
+                    
+                    console.log(`🪙  ${TOKEN_CONFIG.symbol} Balance: ${balance} ${TOKEN_CONFIG.symbol}`);
+                } catch (error) {
+                    if (error.message.includes('could not find')) {
+                        console.log(`🪙  ${TOKEN_CONFIG.symbol} Balance: 0 ${TOKEN_CONFIG.symbol} (cuenta no creada)`);
+                    } else {
+                        console.log(`⚠️  Error obteniendo balance de ${TOKEN_CONFIG.symbol}`);
+                    }
+                }
+            } else {
+                console.log(`ℹ️  Token aún no creado - ejecuta: node code/create_token.js`);
+            }
+            
+            console.log('');
+        }
+        
+        console.log('═'.repeat(50));
+        console.log('✅ Verificación completada\n');
+        
+        if (tokenExists) {
+            console.log('📊 Comandos útiles:');
+            console.log(`   node code/mint_tokens.js ${TEST_WALLETS.payer.publicKey} 1000`);
+            console.log(`   node code/transfer_tokens.js payer-wallet.json ${TEST_WALLETS.recipient.publicKey} 100\n`);
+        }
+        
+    } catch (error) {
+        console.error('\n❌ Error mostrando balances:');
+        console.error(error.message);
     }
 }
 
-module.exports = { getBalance, getAllTokenAccounts };
+if (require.main === module) {
+    const args = process.argv.slice(2);
+    
+    // Si no hay argumentos o se pasa --all sin dirección, mostrar todas las wallets de prueba
+    if (args.length === 0 || (args.length === 1 && args[0] === '--wallets')) {
+        showAllTestWallets();
+    } else if (args.length >= 1) {
+        const walletAddress = args[0];
+        const showAll = args.includes('--all');
+        
+        if (showAll) {
+            getAllTokenAccounts(walletAddress);
+        } else {
+            getBalance(walletAddress);
+        }
+    }
+}
+
+module.exports = { getBalance, getAllTokenAccounts, showAllTestWallets };

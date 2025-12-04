@@ -353,6 +353,8 @@ tokenizer/
 
 ## 🚀 Quick Start
 
+> **Note**: This project uses **fixed test wallets** for devnet/testnet to ensure consistent testing. See `deployment/TEST_WALLETS.md` for details.
+
 ### Using Docker (if npm is not available)
 
 **Step 1: Build the image**
@@ -360,17 +362,17 @@ tokenizer/
 docker build -t token42 .
 ```
 
-**Step 2: Create your token**
+**Step 2: Fund the fixed test wallet (one-time setup)**
 ```bash
-docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
-```
-
-**Step 3: Get testnet SOL**
-```bash
-# Use the airdrop script
-docker run -v ${PWD}/deployment:/app/deployment token42 node deployment/scripts/airdrop.js <YOUR_WALLET_ADDRESS> 2
+# The project uses this fixed devnet wallet: BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
+docker run -v ${PWD}/deployment:/app/deployment token42 node deployment/scripts/airdrop.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV 2
 
 # Or visit: https://faucet.solana.com/
+```
+
+**Step 3: Create your token**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
 ```
 
 **Step 4: Mint tokens**
@@ -390,16 +392,15 @@ docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_token
 
 ### Using Local Node.js
 
-**Step 1: Get Testnet SOL**
+**Step 1: Fund the Fixed Test Wallet (one-time setup)**
 
-After running the create script, you'll get a wallet address. Fund it with devnet SOL:
+The project uses a fixed wallet for devnet/testnet. Fund it once:
 
 ```bash
-# Option 1: Use the airdrop script
-node deployment/scripts/airdrop.js <YOUR_WALLET_ADDRESS> 2
+# Fixed payer wallet address: BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
+node deployment/scripts/airdrop.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV 2
 
-# Option 2: Use the web faucet
-# Visit: https://faucet.solana.com/
+# Or use the web faucet: https://faucet.solana.com/
 ```
 
 **Step 2: Create Your Token**
@@ -415,23 +416,32 @@ This will:
 - Display explorer links
 
 **Step 3: Mint Some Tokens**
+**Step 3: Mint Some Tokens**
 
 ```bash
-node code/mint_tokens.js <YOUR_WALLET_ADDRESS> 1000
+# Mint to payer wallet
+node code/mint_tokens.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV 1000
+
+# Or mint to recipient wallet
+node code/mint_tokens.js 9RtdH3ZppgGXGnF88cXv9FgvP2w5jJajJ8FvdbsKBvQx 500
 ```
 
 **Step 4: Check Balance**
 
 ```bash
-node code/get_balance.js <YOUR_WALLET_ADDRESS>
+# Ver balance de TODAS las wallets de prueba (recomendado)
+node code/get_balance.js
+
+# O ver balance de una wallet específica
+node code/get_balance.js BqNDcwUmtk5yCbTSwkRqjPEn7rCq52Pt8EHgwTfdhDwV
 ```
 
 **Step 5: Transfer Tokens**
 
 ```bash
-node code/transfer_tokens.js payer-wallet.json <RECIPIENT_ADDRESS> 100
+# Transfer from payer to recipient
+node code/transfer_tokens.js payer-wallet.json 9RtdH3ZppgGXGnF88cXv9FgvP2w5jJajJ8FvdbsKBvQx 100
 ```
-
 ---
 
 ## 📖 Usage
@@ -463,10 +473,13 @@ node code/mint_tokens.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU 1000
 ### Checking Balances
 
 ```bash
-# Check Token42 balance
+# Check ALL test wallets (no arguments needed!)
+node code/get_balance.js
+
+# Check specific wallet
 node code/get_balance.js <WALLET_ADDRESS>
 
-# Check all token accounts
+# Check all token accounts for a specific wallet
 node code/get_balance.js <WALLET_ADDRESS> --all
 ```
 
@@ -507,11 +520,12 @@ node deployment/testnet_mint_addr.js
 
 ### Best Practices
 
-1. Always test on devnet first
-2. Verify all addresses before transactions
-3. Keep small amounts in hot wallets
-4. Monitor transactions on explorer
-5. Review transaction logs regularly
+## 📚 Documentation
+
+- **[Usage Guide](documentation/usage.md)** - Comprehensive usage documentation
+- **[Deployment Guide](deployment/deploy_steps.md)** - Step-by-step deployment instructions
+- **[Test Wallets](deployment/TEST_WALLETS.md)** - Fixed wallets for devnet/testnet testing
+- **Transaction Logs** - `deployment/transaction_logs/`
 
 ---
 
