@@ -24,6 +24,8 @@ Before deploying your token, ensure you have:
 
 ## Installation
 
+### Option 1: Local Installation (with npm)
+
 1. **Clone or download the repository**
    ```bash
    cd tokenizer
@@ -39,6 +41,26 @@ Before deploying your token, ensure you have:
    node -v
    npm -v
    ```
+
+### Option 2: Docker Installation (if npm is not available)
+
+1. **Navigate to the repository**
+   ```bash
+   cd tokenizer
+   ```
+
+2. **Build the Docker image**
+   ```bash
+   docker build -t token42 .
+   ```
+
+3. **Verify Docker installation**
+   ```bash
+   docker --version
+   docker run token42 node --version
+   ```
+
+**Note**: All subsequent commands will have both local and Docker versions provided.
 
 ---
 
@@ -102,10 +124,14 @@ solana airdrop 2 <YOUR_WALLET_ADDRESS> --url devnet
 
 ### Step 3: Create Your Token
 
-Run the token creation script:
-
+**Using Local Node.js:**
 ```bash
 node code/create_token.js
+```
+
+**Using Docker:**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
 ```
 
 **What happens:**
@@ -148,39 +174,64 @@ This displays:
 
 Create tokens and assign them to an address:
 
+**Local:**
 ```bash
 node code/mint_tokens.js <DESTINATION_ADDRESS> <AMOUNT>
 ```
 
-Example:
+**Docker:**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js <DESTINATION_ADDRESS> <AMOUNT>
+```
+
+Example (Local):
 ```bash
 node code/mint_tokens.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU 1000
+```
+
+Example (Docker):
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU 1000
 ```
 
 ### 2. Check Balances
 
 View token balance for any address:
 
+**Local:**
 ```bash
 node code/get_balance.js <WALLET_ADDRESS>
+node code/get_balance.js <WALLET_ADDRESS> --all
 ```
 
-View all token accounts:
+**Docker:**
 ```bash
-node code/get_balance.js <WALLET_ADDRESS> --all
+docker run token42 node code/get_balance.js <WALLET_ADDRESS>
+docker run token42 node code/get_balance.js <WALLET_ADDRESS> --all
 ```
 
 ### 3. Transfer Tokens
 
 Send tokens between accounts:
 
+**Local:**
 ```bash
 node code/transfer_tokens.js <SENDER_WALLET_FILE> <RECIPIENT_ADDRESS> <AMOUNT>
 ```
 
-Example:
+**Docker:**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js <SENDER_WALLET_FILE> <RECIPIENT_ADDRESS> <AMOUNT>
+```
+
+Example (Local):
 ```bash
 node code/transfer_tokens.js payer-wallet.json 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 100
+```
+
+Example (Docker):
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js payer-wallet.json 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 100
 ```
 
 ---

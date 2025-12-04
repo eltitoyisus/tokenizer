@@ -301,7 +301,7 @@ tokenizer/
 - **npm** or **yarn**
 - Basic command line knowledge
 
-### Setup Steps
+### Option 1: Local Installation
 
 1. **Clone the repository**
    ```bash
@@ -319,11 +319,78 @@ tokenizer/
    node code/create_token.js
    ```
 
+### Option 2: Docker Installation (Recommended if you can't install npm)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/eltitoyisus/tokenizer.git
+   cd tokenizer
+   ```
+
+2. **Build the Docker image**
+   ```bash
+   docker build -t token42 .
+   ```
+
+3. **Run commands using Docker**
+   ```bash
+   # Create token
+   docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
+   
+   # Mint tokens
+   docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js <ADDRESS> <AMOUNT>
+   
+   # Check balance
+   docker run token42 node code/get_balance.js <ADDRESS>
+   
+   # Transfer tokens
+   docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js payer-wallet.json <RECIPIENT> <AMOUNT>
+   ```
+
+**Note**: The `-v ${PWD}/deployment:/app/deployment` flag mounts your local `deployment` folder to persist wallet files and transaction logs.
+
 ---
 
 ## 🚀 Quick Start
 
-### Step 1: Get Testnet SOL
+### Using Docker (if npm is not available)
+
+**Step 1: Build the image**
+```bash
+docker build -t token42 .
+```
+
+**Step 2: Create your token**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
+```
+
+**Step 3: Get testnet SOL**
+```bash
+# Use the airdrop script
+docker run -v ${PWD}/deployment:/app/deployment token42 node deployment/scripts/airdrop.js <YOUR_WALLET_ADDRESS> 2
+
+# Or visit: https://faucet.solana.com/
+```
+
+**Step 4: Mint tokens**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js <YOUR_WALLET_ADDRESS> 1000
+```
+
+**Step 5: Check balance**
+```bash
+docker run token42 node code/get_balance.js <YOUR_WALLET_ADDRESS>
+```
+
+**Step 6: Transfer tokens**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js payer-wallet.json <RECIPIENT_ADDRESS> 100
+```
+
+### Using Local Node.js
+
+**Step 1: Get Testnet SOL**
 
 After running the create script, you'll get a wallet address. Fund it with devnet SOL:
 
@@ -335,7 +402,7 @@ node deployment/scripts/airdrop.js <YOUR_WALLET_ADDRESS> 2
 # Visit: https://faucet.solana.com/
 ```
 
-### Step 2: Create Your Token
+**Step 2: Create Your Token**
 
 ```bash
 node code/create_token.js
@@ -347,19 +414,19 @@ This will:
 - Save the mint address
 - Display explorer links
 
-### Step 3: Mint Some Tokens
+**Step 3: Mint Some Tokens**
 
 ```bash
 node code/mint_tokens.js <YOUR_WALLET_ADDRESS> 1000
 ```
 
-### Step 4: Check Balance
+**Step 4: Check Balance**
 
 ```bash
 node code/get_balance.js <YOUR_WALLET_ADDRESS>
 ```
 
-### Step 5: Transfer Tokens
+**Step 5: Transfer Tokens**
 
 ```bash
 node code/transfer_tokens.js payer-wallet.json <RECIPIENT_ADDRESS> 100

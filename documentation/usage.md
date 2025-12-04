@@ -85,12 +85,28 @@ tokenizer/
 
 ### Installation
 
+**Option 1: Using npm**
 ```bash
 # Install dependencies
 npm install
 
 # Verify installation
 node code/create_token.js --help
+```
+
+**Option 2: Using Docker (if npm is not available)**
+```bash
+# Build Docker image
+docker build -t token42 .
+
+# Verify installation
+docker run token42 node code/create_token.js --help
+```
+
+**Important for Docker users**: Always use the `-v ${PWD}/deployment:/app/deployment` flag to mount the deployment folder and persist wallet files and logs:
+
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node <command>
 ```
 
 ### Initial Setup
@@ -126,9 +142,14 @@ node code/create_token.js --help
 
 ### 1. Creating a Token
 
-**Command:**
+**Command (Local):**
 ```bash
 node code/create_token.js
+```
+
+**Command (Docker):**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/create_token.js
 ```
 
 **Process:**
@@ -159,22 +180,36 @@ Next Steps:
 
 ### 2. Minting Tokens
 
-**Command:**
+**Command (Local):**
 ```bash
 node code/mint_tokens.js <DESTINATION_ADDRESS> <AMOUNT>
+```
+
+**Command (Docker):**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js <DESTINATION_ADDRESS> <AMOUNT>
 ```
 
 **Parameters:**
 - `DESTINATION_ADDRESS`: Solana wallet public key
 - `AMOUNT`: Number of tokens (whole units)
 
-**Examples:**
+**Examples (Local):**
 ```bash
 # Mint 1000 tokens
 node code/mint_tokens.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU 1000
 
 # Mint 500 tokens to another address
 node code/mint_tokens.js 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 500
+```
+
+**Examples (Docker):**
+```bash
+# Mint 1000 tokens
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU 1000
+
+# Mint 500 tokens to another address
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/mint_tokens.js 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 500
 ```
 
 **What Happens:**
@@ -191,22 +226,36 @@ Stored in `deployment/transaction_logs/mint_log.json`
 
 ### 3. Checking Balances
 
-**Command:**
+**Command (Local):**
 ```bash
 node code/get_balance.js <WALLET_ADDRESS> [--all]
+```
+
+**Command (Docker):**
+```bash
+docker run token42 node code/get_balance.js <WALLET_ADDRESS> [--all]
 ```
 
 **Parameters:**
 - `WALLET_ADDRESS`: Solana wallet public key
 - `--all`: (Optional) Show all token accounts
 
-**Examples:**
+**Examples (Local):**
 ```bash
 # Check Token42 balance
 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
 
 # Check all tokens
 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU --all
+```
+
+**Examples (Docker):**
+```bash
+# Check Token42 balance
+docker run token42 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+
+# Check all tokens
+docker run token42 node code/get_balance.js 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU --all
 ```
 
 **Output:**
@@ -229,9 +278,14 @@ Is Frozen: No
 
 ### 4. Transferring Tokens
 
-**Command:**
+**Command (Local):**
 ```bash
 node code/transfer_tokens.js <SENDER_WALLET_FILE> <RECIPIENT_ADDRESS> <AMOUNT>
+```
+
+**Command (Docker):**
+```bash
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js <SENDER_WALLET_FILE> <RECIPIENT_ADDRESS> <AMOUNT>
 ```
 
 **Parameters:**
@@ -239,10 +293,16 @@ node code/transfer_tokens.js <SENDER_WALLET_FILE> <RECIPIENT_ADDRESS> <AMOUNT>
 - `RECIPIENT_ADDRESS`: Recipient's public key
 - `AMOUNT`: Number of tokens to send
 
-**Examples:**
+**Examples (Local):**
 ```bash
 # Transfer 100 tokens
 node code/transfer_tokens.js payer-wallet.json 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 100
+```
+
+**Examples (Docker):**
+```bash
+# Transfer 100 tokens
+docker run -v ${PWD}/deployment:/app/deployment token42 node code/transfer_tokens.js payer-wallet.json 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin 100
 ```
 
 **Process:**
