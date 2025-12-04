@@ -1,14 +1,3 @@
-/**
- * Token Balance Checker for Token42
- * 
- * This script checks the token balance for a specified wallet address.
- * It can also display SOL balance and all token accounts.
- * 
- * Process:
- * 1. Load the token mint address
- * 2. Get the associated token account for the wallet
- * 3. Display the token balance
- */
 
 const {
     getAccount,
@@ -20,23 +9,17 @@ const { TOKEN_CONFIG } = require('./utils/config');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Gets the token balance for a specified address
- * @param {string} walletAddress - Public key of the wallet to check
- * @param {boolean} showSOL - Whether to also show SOL balance
- */
 async function getBalance(walletAddress, showSOL = true) {
     try {
         console.log('=== Token42 Balance Checker ===\n');
         
-        // Step 1: Get connection to Solana network
+        // Connect to the SOL network
         const connection = getConnection();
         
-        // Step 2: Parse the wallet address
+        // Parse the wallet
         const walletPublicKey = new PublicKey(walletAddress);
         console.log(`Checking balance for: ${walletPublicKey.toString()}\n`);
-        
-        // Step 3: Show SOL balance if requested
+
         if (showSOL) {
             console.log('--- SOL Balance ---');
             const solBalance = await connection.getBalance(walletPublicKey);
@@ -45,7 +28,6 @@ async function getBalance(walletAddress, showSOL = true) {
             console.log('');
         }
         
-        // Step 4: Load the token mint address
         console.log('--- Token42 Balance ---');
         const mintAddressFile = path.join(__dirname, '../deployment/token_mint_address.json');
         
@@ -58,7 +40,6 @@ async function getBalance(walletAddress, showSOL = true) {
         console.log(`Token: ${TOKEN_CONFIG.name} (${TOKEN_CONFIG.symbol})`);
         console.log(`Mint Address: ${mintAddress.toString()}`);
         
-        // Step 5: Get the associated token account address
         const associatedTokenAddress = await getAssociatedTokenAddress(
             mintAddress,
             walletPublicKey
@@ -66,7 +47,7 @@ async function getBalance(walletAddress, showSOL = true) {
         
         console.log(`Token Account: ${associatedTokenAddress.toString()}`);
         
-        // Step 6: Try to get the account info
+        // Get acc info
         try {
             const tokenAccount = await getAccount(connection, associatedTokenAddress);
             
@@ -85,7 +66,6 @@ async function getBalance(walletAddress, showSOL = true) {
             return balance;
             
         } catch (error) {
-            // Account doesn't exist - means balance is 0
             if (error.message.includes('could not find')) {
                 console.log(`\n✅ Balance: 0 ${TOKEN_CONFIG.symbol}`);
                 console.log('(Token account not yet created for this wallet)');
@@ -100,10 +80,6 @@ async function getBalance(walletAddress, showSOL = true) {
     }
 }
 
-/**
- * Gets all token accounts for a wallet
- * @param {string} walletAddress - Public key of the wallet to check
- */
 async function getAllTokenAccounts(walletAddress) {
     try {
         console.log('=== All Token Accounts ===\n');
@@ -143,7 +119,6 @@ async function getAllTokenAccounts(walletAddress) {
     }
 }
 
-// Run the script if executed directly
 if (require.main === module) {
     const args = process.argv.slice(2);
     

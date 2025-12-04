@@ -1,19 +1,8 @@
-/**
- * Airdrop Script for Token42
- * 
- * This script requests SOL airdrop from the Solana faucet (devnet/testnet only).
- * Use this to get free SOL for transaction fees during development.
- */
 
 const { Connection, PublicKey, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 const { getConnection } = require('../../code/utils/connection');
 const { NETWORK } = require('../../code/utils/config');
 
-/**
- * Requests a SOL airdrop for the specified address
- * @param {string} address - Public key to receive the airdrop
- * @param {number} amount - Amount of SOL to request (default: 2)
- */
 async function requestAirdrop(address, amount = 2) {
     try {
         console.log('=== SOL Airdrop Request ===\n');
@@ -65,7 +54,6 @@ async function requestAirdrop(address, amount = 2) {
     }
 }
 
-// Run the script if executed directly
 if (require.main === module) {
     const args = process.argv.slice(2);
     

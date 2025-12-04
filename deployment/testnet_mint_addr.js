@@ -1,9 +1,3 @@
-/**
- * Testnet Mint Address Viewer
- * 
- * This script displays the mint address and related information
- * for tokens deployed on testnet/devnet
- */
 
 const fs = require('fs');
 const path = require('path');
@@ -29,7 +23,6 @@ function displayMintInfo() {
     console.log(`Freeze Authority: ${mintData.freezeAuthority}`);
     console.log(`\nCreated: ${new Date(mintData.createdAt).toLocaleString()}`);
     
-    // Generate explorer links
     const explorerUrl = `https://explorer.solana.com/address/${mintData.mintAddress}?cluster=${mintData.network}`;
     const solscanUrl = mintData.network === 'mainnet-beta' 
         ? `https://solscan.io/token/${mintData.mintAddress}`

@@ -1,15 +1,3 @@
-/**
- * Token Transfer Script for Token42
- * 
- * This script transfers tokens from one account to another.
- * The sender must have sufficient tokens and SOL for transaction fees.
- * 
- * Process:
- * 1. Load the sender's wallet
- * 2. Load the token mint address
- * 3. Get or create token accounts for sender and recipient
- * 4. Transfer the specified amount of tokens
- */
 
 const {
     getOrCreateAssociatedTokenAccount,
@@ -23,20 +11,13 @@ const { TOKEN_CONFIG } = require('./utils/config');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Transfers tokens from the sender to a recipient
- * @param {string} senderWalletFile - Filename of the sender's wallet
- * @param {string} recipientAddress - Public key of the recipient
- * @param {number} amount - Amount of tokens to transfer (in whole tokens)
- */
+
 async function transferTokens(senderWalletFile, recipientAddress, amount) {
     try {
         console.log('=== Token42 Transfer Process ===\n');
         
-        // Step 1: Get connection to Solana network
         const connection = getConnection();
         
-        // Step 2: Load the token mint address
         console.log('Loading token mint address...');
         const mintAddressFile = path.join(__dirname, '../deployment/token_mint_address.json');
         
@@ -48,18 +29,17 @@ async function transferTokens(senderWalletFile, recipientAddress, amount) {
         const mintAddress = new PublicKey(mintData.mintAddress);
         console.log(`Token Mint: ${mintAddress.toString()}`);
         
-        // Step 3: Load the sender's wallet
+        // Load the sender's wallet
         console.log('\nLoading sender wallet...');
         const sender = loadWallet(senderWalletFile);
         
-        // Step 4: Parse recipient address
         console.log('\nPreparing transfer...');
         const recipientPublicKey = new PublicKey(recipientAddress);
         console.log(`From: ${sender.publicKey.toString()}`);
         console.log(`To: ${recipientPublicKey.toString()}`);
         console.log(`Amount: ${amount} ${TOKEN_CONFIG.symbol}`);
         
-        // Step 5: Get the sender's token account
+        // Get sender's token account
         console.log('\nGetting sender token account...');
         const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
             connection,
@@ -70,7 +50,7 @@ async function transferTokens(senderWalletFile, recipientAddress, amount) {
         
         console.log(`Sender Token Account: ${senderTokenAccount.address.toString()}`);
         
-        // Step 6: Check sender's balance
+        // Check sender's balance
         const senderAccountInfo = await getAccount(connection, senderTokenAccount.address);
         const senderBalance = Number(senderAccountInfo.amount) / (10 ** TOKEN_CONFIG.decimals);
         console.log(`Sender Balance: ${senderBalance} ${TOKEN_CONFIG.symbol}`);
@@ -79,7 +59,6 @@ async function transferTokens(senderWalletFile, recipientAddress, amount) {
             throw new Error(`Insufficient balance. You have ${senderBalance} ${TOKEN_CONFIG.symbol} but trying to send ${amount} ${TOKEN_CONFIG.symbol}`);
         }
         
-        // Step 7: Get or create the recipient's token account
         console.log('\nGetting or creating recipient token account...');
         const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
             connection,
@@ -120,7 +99,7 @@ async function transferTokens(senderWalletFile, recipientAddress, amount) {
         console.log(`Sender new balance: ${newSenderBalance} ${TOKEN_CONFIG.symbol}`);
         console.log(`Recipient new balance: ${newRecipientBalance} ${TOKEN_CONFIG.symbol}`);
         
-        // Step 11: Log the transaction
+        // Log of the transaction
         logTransaction({
             type: 'TRANSFER',
             signature,
@@ -136,10 +115,6 @@ async function transferTokens(senderWalletFile, recipientAddress, amount) {
     }
 }
 
-/**
- * Logs transaction to a file
- * @param {Object} transaction - Transaction details
- */
 function logTransaction(transaction) {
     const logDir = path.join(__dirname, '../deployment/transaction_logs');
     if (!fs.existsSync(logDir)) {
@@ -157,7 +132,6 @@ function logTransaction(transaction) {
     fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
 }
 
-// Run the script if executed directly
 if (require.main === module) {
     const args = process.argv.slice(2);
     
